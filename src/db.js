@@ -58,6 +58,7 @@ function initSchema(db) {
       migration_notes TEXT DEFAULT '',
       usage_example TEXT DEFAULT '',
       breaking_changes TEXT DEFAULT '',
+      reference_url TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now')),
       UNIQUE(old_api, old_package, source_version, target_version)
@@ -93,6 +94,9 @@ function initSchema(db) {
     CREATE INDEX IF NOT EXISTS idx_article_lookup
       ON article_cache(api_name, version);
   `);
+
+  // Add reference_url column to existing DBs that predate this field
+  try { db.exec(`ALTER TABLE migration_mappings ADD COLUMN reference_url TEXT DEFAULT ''`); } catch (_) { /* already exists */ }
 }
 
 function seedIfEmpty(db) {
@@ -103,11 +107,11 @@ function seedIfEmpty(db) {
     INSERT OR IGNORE INTO migration_mappings
       (old_api, old_package, old_namespace, source_version,
        new_api, new_package, new_namespace, target_version,
-       status, migration_notes, usage_example, breaking_changes)
+       status, migration_notes, usage_example, breaking_changes, reference_url)
     VALUES
       (@old_api, @old_package, @old_namespace, @source_version,
        @new_api, @new_package, @new_namespace, @target_version,
-       @status, @migration_notes, @usage_example, @breaking_changes)
+       @status, @migration_notes, @usage_example, @breaking_changes, @reference_url)
   `);
 
   const insertMany = db.transaction((mappings) => {
@@ -127,6 +131,7 @@ function seedIfEmpty(db) {
         migration_notes: m.notes || '',
         usage_example: m.usage_example || '',
         breaking_changes: m.breaking_changes || '',
+        reference_url: m.reference_url || '',
       });
     }
   });
@@ -148,11 +153,11 @@ export function insertMapping(db, mapping) {
     INSERT OR REPLACE INTO migration_mappings
       (old_api, old_package, old_namespace, source_version,
        new_api, new_package, new_namespace, target_version,
-       status, migration_notes, usage_example, breaking_changes, updated_at)
+       status, migration_notes, usage_example, breaking_changes, reference_url, updated_at)
     VALUES
       (@old_api, @old_package, @old_namespace, @source_version,
        @new_api, @new_package, @new_namespace, @target_version,
-       @status, @migration_notes, @usage_example, @breaking_changes, datetime('now'))
+       @status, @migration_notes, @usage_example, @breaking_changes, @reference_url, datetime('now'))
   `).run(mapping);
 }
 

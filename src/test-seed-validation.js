@@ -67,7 +67,7 @@ const GROUND_TRUTH = [
     api: 'DropShadowPanel',
     pkg: 'Microsoft.Toolkit.Uwp.UI.Controls',
     status: 'removed_with_replacement',
-    new_api: 'AttachedShadow',
+    new_api: 'AttachedCardShadow',
     new_pkg: 'CommunityToolkit.WinUI.Media',
   },
   {

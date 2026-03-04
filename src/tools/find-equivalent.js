@@ -39,6 +39,10 @@ export async function handleFindEquivalent({ api_name, package_name, source_vers
     lines.push('### Breaking Changes', '', result.breaking_changes, '');
   }
 
+  if (result.reference_url) {
+    lines.push('### Reference', '', `📖 [Official Documentation](${result.reference_url})`, '');
+  }
+
   return {
     content: [{ type: 'text', text: lines.join('\n') }],
   };

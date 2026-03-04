@@ -232,6 +232,7 @@ function formatMappingResult(row) {
     migration_notes: row.migration_notes,
     usage_example: row.usage_example,
     breaking_changes: row.breaking_changes,
+    reference_url: row.reference_url || '',
     source_version: row.source_version,
     target_version: row.target_version,
   };
