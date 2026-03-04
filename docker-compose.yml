@@ -1,0 +1,15 @@
+services:
+  wct-migration-mcp:
+    image: ghcr.io/scribblesbykk/wct-migration-mcp-server:latest
+    container_name: wct-migration-mcp-server
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - wct-data:/app/data
+    environment:
+      MCP_TRANSPORT: http
+      PORT: 3001
+
+volumes:
+  wct-data:

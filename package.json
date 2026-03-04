@@ -1,0 +1,24 @@
+{
+  "name": "wct-migration-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Windows Community Toolkit v7→v8 migration with persistent cache",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "start:http": "MCP_TRANSPORT=http node src/index.js",
+    "test": "node src/test-mcp.js",
+    "warm-cache": "node src/warm-cache.js"
+  },
+  "author": "ScribblesByKK",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "better-sqlite3": "^11.0.0",
+    "cheerio": "^1.2.0",
+    "express": "^4.22.1",
+    "node-fetch": "^3.3.2",
+    "turndown": "^7.2.2",
+    "@node-rs/xxhash": "^1.7.6"
+  }
+}
