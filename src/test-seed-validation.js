@@ -260,11 +260,26 @@ async function runValidation() {
       });
 
       const raw = result.content?.[0]?.text || '';
-      // The tool returns a JSON block inside markdown
-      const jsonMatch = raw.match(/```json\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
-      if (!jsonMatch) throw new Error(`No JSON in response:\n${raw.slice(0, 300)}`);
 
-      const data = JSON.parse(jsonMatch[1]);
+      // Tool returns a markdown table; extract fields from it.
+      // Row format:  | **Field Label** | `value` |  or  | **Field Label** | value |
+      function tableVal(label) {
+        const re = new RegExp(`\\*\\*${label}\\*\\*\\s*\\|\\s*\`?([^\`|\\n]+?)\`?\\s*\\|`, 'i');
+        const m = raw.match(re);
+        return m ? m[1].trim() : null;
+      }
+
+      const data = {
+        status:      tableVal('Status'),
+        new_api:     tableVal('v8 API'),
+        new_package: tableVal('v8 Package'),
+      };
+
+      // Normalise N/A → null
+      if (data.new_api     === 'N/A') data.new_api     = null;
+      if (data.new_package === 'N/A') data.new_package = null;
+
+      if (!data.status) throw new Error(`Could not parse response:\n${raw.slice(0, 400)}`);
 
       const errors = [];
 
