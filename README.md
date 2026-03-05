@@ -116,9 +116,33 @@ Add to `.vscode/mcp.json` in your workspace:
 
 ---
 
-## Using the Tools in Copilot Chat
+## Using the Copilot Coding Agent
 
-Once configured, you can ask Copilot:
+This repo ships a ready-to-use **Copilot Coding Agent** definition and migration skill:
+
+| File | Purpose |
+|------|---------|
+| `.github/agent.md` | Agent identity, MCP config, operating principles, report format |
+| `.github/skill.md` | `windows_toolkit_migration` skill — step-by-step MCP-driven workflow |
+
+### Starting a migration
+
+Open Copilot Chat and say:
+
+```
+Migrate my project from WCT 7 to 8. The solution is at ./MyApp/MyApp.sln
+```
+
+The agent will:
+1. Discover all WCT v7 `PackageReference` entries
+2. Call `find_equivalent` for each package and API
+3. Apply all changes to `.csproj`, `.cs`, and `.xaml` files
+4. Run a `dotnet build` / fix loop (up to 20 iterations)
+5. Write a `migration-report.md` to the solution root
+
+### Ad-hoc tool queries
+
+You can also query the MCP tools directly:
 
 ```
 What's the v8 equivalent of AdaptiveGridView?
@@ -126,9 +150,6 @@ Find the migration path for InAppNotification.
 Search WCT docs for BladeView.
 Fetch the v8 docs for WrapPanel.
 ```
-
-Or naturally:
-> "I'm migrating from WCT 7.1.1 to 8. What happened to DropShadowPanel?"
 
 ---
 
@@ -168,22 +189,6 @@ npm run warm-cache
 # Docker
 docker exec -it wct-migration-mcp-server node src/warm-cache.js
 ```
-
----
-
-## Migration Script
-
-A PowerShell script automates bulk migration of WinUI solutions:
-
-```powershell
-.\scripts\Migrate-WctWorkspace.ps1 -SolutionPath .\MySolution.sln
-```
-
-The script:
-1. Scans `.csproj` files for WCT v7 `PackageReference` entries
-2. Calls `find_equivalent` on the MCP server for each
-3. Updates package references, `using` directives, and XAML `xmlns` declarations
-4. Runs a build-fix loop (up to 20 iterations) resolving compiler errors via MCP tools
 
 ---
 
